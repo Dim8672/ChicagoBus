@@ -11,6 +11,7 @@ import org.primefaces.model.map.Marker;
 /**
  *
  * @author dimitri.mella
+ * Bean utilisé pour afficher les informations retournées par les webServices.
  */
 @Named(value = "mapMarkers")
 @ViewScoped
