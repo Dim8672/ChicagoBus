@@ -18,6 +18,7 @@ import org.primefaces.model.map.Marker;
 public class MapMarkers implements Serializable{
 
     private MapModel simpleModel;
+    private Marker busMarker;
 
     /**
      * Creates a new instance of MapMarkers
@@ -30,6 +31,7 @@ public class MapMarkers implements Serializable{
      */
     public void init() {
         simpleModel = new DefaultMapModel();
+       //busMarker = new Marker(new LatLng(),"Bus");
 
         //Coordinates of the office and the bus stop
         LatLng coordOffice = new LatLng(41.980262, -87.668452);
@@ -39,9 +41,11 @@ public class MapMarkers implements Serializable{
         simpleModel.addOverlay(new Marker(coordOffice, "IAMOffice"));
         simpleModel.addOverlay(new Marker(coordBusStop, "BusStop"));
         
+        // appelle de la méthode permettant de rafraichir la position du bus à suivre et des bus en direction du Nord.
         this.refreshCoordinates();
     }
 
+    // Getter pour la méthode 
     public MapModel getSimpleModel() {
         return simpleModel;
     }
