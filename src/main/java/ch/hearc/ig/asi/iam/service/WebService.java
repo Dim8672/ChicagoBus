@@ -45,6 +45,7 @@ public class WebService implements Serializable {
         jsonObject = jsonObject.getJSONObject("bustime-response");
         JSONArray vehicles = jsonObject.getJSONArray("vehicle");
 
+        // Parcours du tableau JSON afin de prendre seulement les bus allant dans la direction du Nord
         for (int i = 0; i < vehicles.length(); i++) {
             if (vehicles.getJSONObject(i).getString("des").equals("Howard")) {
                 results.add(vehicles.getJSONObject(i));
@@ -54,33 +55,29 @@ public class WebService implements Serializable {
         return results;
     }
 
+    /**
+     * Méthode utilisée pour appeller le service Web
+     * @param request l'URL correspondant à l'appel du service Web
+     * @return un BufferedReaader en JSON que l'on pourra parcourir
+     */
     private BufferedReader makeHttpCall(String request) {
-
         DefaultHttpClient httpClient = new DefaultHttpClient();
-
         HttpGet getRequest = new HttpGet(
                 request);
         getRequest.addHeader("accept", "application/json");
-
         try {
             HttpResponse response = httpClient.execute(getRequest); // Envoi de la demande au service REST
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
-
             // Instanciation du buffer
             BufferedReader br = new BufferedReader(
                     new InputStreamReader((response.getEntity().getContent())));
-
-           // httpClient.getConnectionManager().shutdown(); // Fermeture de la connexion
-
             return br;
         } catch (IOException ex) {
             Logger.getLogger(WebService.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return null;
-
     }
 }

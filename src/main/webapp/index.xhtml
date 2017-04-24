@@ -31,30 +31,30 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h:form id="form">
-                            <p:dataTable value="#{mapMarkers.bus}" var="bus" id="coordTable" sortBy="#{!bus.goodBus}" >
-                                <p:column headerText="Numéro du Bus">
-                                    <h:outputText value="#{bus.id}"/>
-                                </p:column>
+                            <p:dataTable value="#{mapMarkers.bus}" var="bus" id="coordTable" sortBy="#{!bus.goodBus}" styleClass="tableData">
+                                    <p:column headerText="Numéro du Bus">
+                                        <h:outputText value="#{bus.id}"/>
+                                    </p:column>
 
-                                <p:column headerText="Direction">
-                                    <h:outputText value="#{bus.direction}"/>
-                                </p:column>
+                                    <p:column headerText="Direction">
+                                        <h:outputText value="#{bus.direction}"/>
+                                    </p:column>
 
-                                <p:column headerText="Latitude">
-                                    <h:outputText value="#{bus.latitude}" styleClass="latitude"/>
-                                </p:column>
+                                    <p:column headerText="Latitude">
+                                        <h:outputText value="#{bus.latitude}" styleClass="latitude"/>
+                                    </p:column>
 
-                                <p:column headerText="Longitude">
-                                    <h:outputText value="#{bus.longitude}" styleClass="longitude"/>
-                                </p:column>
+                                    <p:column headerText="Longitude">
+                                        <h:outputText value="#{bus.longitude}" styleClass="longitude"/>
+                                    </p:column>
 
-                                <p:column headerText="Distance">
-                                    <h:outputText value="#{bus.distance}" />
-                                </p:column>
+                                    <p:column headerText="Distance">
+                                        <h:outputText value="#{bus.distance}" />
+                                    </p:column>
 
-                                <p:column headerText="Bus contenant la valise">
-                                    <h:outputText value="#{bus.goodBus}" />
-                                </p:column>
+                                    <p:column headerText="Bus contenant la valise">
+                                        <h:outputText value="#{bus.goodBus}" />
+                                    </p:column>
                             </p:dataTable>
                             <p:poll interval="5" listener="#{mapMarkers.makeArrayOfBus()}" update="form"/>
                         </h:form>

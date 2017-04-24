@@ -1,13 +1,15 @@
-var map;
-var task = setInterval(refreshMarkers, 10000);
-var bus;
-var markers = [];
+// Déclaration de variable globales
+var map; // Map Google
+var task = setInterval(refreshMarker, 10000); // Demande de rafraichissement des markers toutes les 10 secondes
+var bus; // le bus contenant la valise
+var busMarker; // le marker du bus contenant la valise
 
 /**
  * Fonction utilisée pour initialiser la map et mettre les marqueurs
  * @returns {undefined}
  */
 function initMap() {
+    
     // Initialisation de la map
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 41.980262, lng: -87.668999},
@@ -31,58 +33,53 @@ function initMap() {
         icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
     });
 
-    refreshMarkers();
+    refreshMarker(); // Appelle de la méthode allant rafraichir le marker du bus contenant la valise
 }
 
+/**
+ * Fonction allant rechercher le bus contenant la valise, il s'agit du premier bus du tableau (le bus ayant donc l'attribut goodBus a true)
+ * @returns {undefined}
+ */
 function getGoodBus() {
     bus = {
-        lat: Number($("#form:coordTable").children().first().find(".latitude").text()),
-        lng: Number($("#form:coordTable").children().first().find(".longitude").text())
+        lat: Number($("#form").find(".tableData").children().first().children().first().children().last().children().first().find(".latitude").text()),
+        lng: Number($("#form").find(".tableData").children().first().children().first().children().last().children().first().find(".longitude").text())
     };
-    
-    console.log(bus);
-    
+      
 }
 
-function refreshMarkers() {
-    clearMarkers();
+/**
+ * Fonction allant créer le nouveau Marker pour le bus contenant la valise
+ * la méthode afin de supprimer le Marker existant et la méthode allant rechercher les nouvelles coordonnées du bus sont également appellées
+ * @returns {undefined}
+ */
+function refreshMarker() {
+    clearMarker();
     getGoodBus();
-
-    var busMarker = new google.maps.Marker({
+    console.log(bus);
+    busMarker = new google.maps.Marker({
         position: {lat: bus.lat, lng: bus.lng},
         map: map,
         title: 'Bus Potentiel',
         icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
     });
     
-    markers.push(busMarker);
-    
-    showMarkers();
 }
 
-// Sets the map on all markers in the array.
-function setMapOnAll(map) {
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
-    }
+/**
+ * Méthode allant supprimer le Marker du bus contenant la valise sur la map
+ * @returns {undefined}
+ */
+function clearMarker() {
+    if(busMarker !== undefined){
+        busMarker.setMap(null);
+    }       
 }
 
-// Removes the markers from the map, but keeps them in the array.
-function clearMarkers() {
-    setMapOnAll(null);
-}
-
-// Shows any markers currently in the array.
-function showMarkers() {
-    setMapOnAll(map);
-}
-
-// Deletes all markers in the array by removing references to them.
-function deleteMarkers() {
-    clearMarkers();
-    markers = [];
-}
-
+/**
+ * Méthode appellée au chargement de la page afin d'initialiser la map
+ * @param {type} param
+ */
 jQuery(document).ready(function () {
     initMap();
 });

@@ -4,7 +4,6 @@ import ch.hearc.ig.asi.iam.business.Bus;
 import ch.hearc.ig.asi.iam.service.WebService;
 import ch.hearc.ig.asi.iam.utilitaire.Utilitaire;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.view.ViewScoped;
@@ -21,7 +20,8 @@ import org.json.JSONObject;
 @ViewScoped
 public class MapMarkers implements Serializable {
 
-    private List<Bus> bus;
+    private List<Bus> bus; // Liste contenant les bus qui vont dans la direction du Nord
+    private Bus goodBus; // Attribut utilisé pour stocker le bon bus que l'on tracke
 
     @Inject
     WebService services;
@@ -38,6 +38,7 @@ public class MapMarkers implements Serializable {
      */
     public void init() {
         this.bus = new ArrayList<>();
+        goodBus = null;
         this.makeArrayOfBus();
     }
 
@@ -50,11 +51,12 @@ public class MapMarkers implements Serializable {
     }
 
     /**
-     * Rafraichir les données des bus qui circulent
+     * Rafraichir les données des bus qui circulent sur la route 22
      */
     public void makeArrayOfBus() {
-        List<JSONObject> listOfBus = services.getVehiclesOfRoad22();
-
+        List<JSONObject> listOfBus = services.getVehiclesOfRoad22(); // Appel des WebServices
+        this.bus.clear();
+        // Peuplement de la liste des bus en fonction du résultat des WebServices
         for (JSONObject jsonObject : listOfBus) {
             this.bus.add(new Bus(
                     jsonObject.getLong("vid"),
@@ -65,11 +67,23 @@ public class MapMarkers implements Serializable {
             ));
         }
 
-        this.findBus();
+        // Test afin de savoir si le bon bus a déjà été découvert, si non : on le trouve, autrement on le reprend dans notre nouveau tableau de bus
+        if(goodBus == null){
+            this.findBus();
+        } else {
+            for(Bus bus : this.bus){
+                if (bus.getId().toString().equals(this.goodBus.getId().toString())){
+                    bus.setGoodBus(true);
+                }
+            }
+        }
     }
 
+    /**
+     * Méthode utilisée pour trouver le bus contenant la valise, concrétement il s'agit du bus ayant une latitude supérieur à la latitude de l'arrêt où l'utilisateur est descendu
+     * et étant le plus proche de cet arrêt
+     */
     public void findBus() {
-        Bus goodBus = null;
         for (int i = 0; i < this.bus.size(); i++) {
             if ((bus.get(i).getLatitude() > 41.984982)) {
                 if(goodBus == null){
