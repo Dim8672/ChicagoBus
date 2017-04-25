@@ -57,7 +57,7 @@
                         <div class="well">
                             <h:outputLabel id="applicationState">
                                 <h:outputText value="Etat de l'application : " />
-                                <h:outputText value="#{mapMarkers.applicationState == 'BUSNOTFINDED' ? 'Aucun bus est trouvé, veuillez patienter pour une prochaine recherche' : mapMarkers.applicationState == 'BUSFINDED' ? 'Bus trouvé ! Il est indiqué en première position dans le tableau de la liste des bus.' : 'Service Indisponible, veuimapMarkers.llez patienter un moment avant de relancer'}"/>
+                                <h:outputText value="#{mapMarkers.applicationState == 'BUSNOTFINDED' ? 'Aucun bus est trouvé, veuillez patienter pour une prochaine recherche' : mapMarkers.applicationState == 'BUSFINDED' ? 'Bus trouvé ! Il est indiqué en première position dans le tableau de la liste des bus.' : 'Service Indisponible, veuillez patienter un moment avant de relancer'}"/>
                             </h:outputLabel>
                         </div>
                     </div>
@@ -96,19 +96,16 @@
                                     <h:outputText value="#{bus.longitude}" styleClass="longitude"/>
                                 </p:column>
 
-                                <p:column headerText="Distance">
-                                    <h:outputText value="#{bus.distance} km" />
-                                </p:column>
-
                                 <p:column headerText="Bus contenant la valise" styleClass="#{bus.goodBus ? 'valise' : null}">
                                     <h:panelGroup styleClass="#{bus.goodBus ? 'ui-icon ui-icon-check' : 'ui-icon ui-icon-cancel'}" />
+                                    <h:outputText value="#{bus.goodBus ? bus.distance.toString().concat(' km de distance de l arrêt du bus') : ''} " />
                                 </p:column>
                             </p:dataTable>
                             <p:poll interval="60" listener="#{mapMarkers.makeArrayOfBus()}" update="form, :applicationState"/>
                         </h:form>
                         <p:dialog header="Valise à portée de main" widgetVar="dlg2" modal="true" height="100">
                             <h:form>
-                                <h:outputText value="Le bus arrive dépêchez vous d'aller à l'arrêt bordel à queue" />
+                                <h:outputText value="Le bus arrive dépêchez-vous !" />
                                 <br/>
                                 <p:commandButton id="save" value="Je vais chercher ma valise !" icon="ui-icon-disk" oncomplete="PF('dlg2').hide()"/>
                             </h:form>

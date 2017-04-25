@@ -87,7 +87,7 @@ public class MapMarkers implements Serializable {
                         jsonObject.getString("des"),
                         jsonObject.getDouble("lat"),
                         jsonObject.getDouble("lon"),
-                        services.retrieveDistance(jsonObject.getDouble("lat"), jsonObject.getDouble("lon"))
+                        new BigDecimal("0") // Une distance à 0 est initialisé pour chaque bus, comme l'API de Google Distance est utilisée pour calculer la distance, l'appel se fait seulement pour le bus qui est tracké afin de limiter les appels (licence limitée)
                 ));
             }
 
@@ -98,6 +98,8 @@ public class MapMarkers implements Serializable {
                 for (Bus bus : this.bus) {
                     if (bus.getId().toString().equals(this.goodBus.getId().toString())) {
                         bus.setGoodBus(true);
+                        bus.setDistance(services.retrieveDistance(bus.getLatitude(), bus.getLongitude()));
+                        this.goodBus = bus;
                     }
                 }
                 // Test afin de déterminer si le bus est proche de l'arrêt, si oui : une alerte est envoyée à l'utilisateur 
@@ -108,7 +110,7 @@ public class MapMarkers implements Serializable {
             }
             // Appelle de la fonction de rafraichissement de la carte en JavaScript
             RequestContext.getCurrentInstance().execute("refreshMarker();");
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             this.applicationState = ApplicationState.SERVICESUNAVAILABLE.name(); // Si les services Web sont indisponible, l'état de l'application passe à indisponible
         }
 
@@ -119,7 +121,7 @@ public class MapMarkers implements Serializable {
      * s'agit du bus ayant une latitude supérieur à la latitude de l'arrêt où
      * l'utilisateur est descendu et étant le plus proche de cet arrêt
      */
-    public void findBus() {
+    public void findBus() throws IOException {
         for (int i = 0; i < this.bus.size(); i++) {
             if (bus.get(i).getDirection().equals("Howard")) {
                 if ((bus.get(i).getLatitude() > 41.984982)) {
@@ -134,6 +136,7 @@ public class MapMarkers implements Serializable {
         }
         if (goodBus != null) {
             goodBus.setGoodBus(true);
+            goodBus.setDistance(services.retrieveDistance(goodBus.getLatitude(), goodBus.getLongitude()));
             this.applicationState = ApplicationState.BUSFINDED.name(); // L'état de l'application change, le bus a été trouvé
         }
     }

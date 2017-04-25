@@ -85,7 +85,7 @@ public class WebService implements Serializable {
         sb.append(",").append("-87.668999"); // Longitude de l'arrêt du bus où est descendu l'utilisateur
         sb.append("&destinations=").append(latitude.toString());
         sb.append(",").append(longitude.toString());
-        sb.append("&key=AIzaSyD1bvIsZgdSMc-S_LfC83MPhbyhanrwA7Y");
+        sb.append("&key=AIzaSyBwIzo8XGQ4N3sfjR9MI2aQ4JYYsdlzYnU");
 
         BufferedReader bufferedReader = this.makeHttpCall(sb.toString());
 
