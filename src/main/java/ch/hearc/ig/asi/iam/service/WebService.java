@@ -5,9 +5,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Singleton;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -28,7 +27,7 @@ public class WebService implements Serializable {
      *
      * @return un tableau de JSONObject contenant la liste des bus
      */
-    public ArrayList<JSONObject> getVehiclesOfRoad22() {
+    public ArrayList<JSONObject> getVehiclesOfRoad22() throws IOException {
         ArrayList<JSONObject> results = new ArrayList<>();
 
         // Création de l'URL pour le WebServices
@@ -47,37 +46,54 @@ public class WebService implements Serializable {
 
         // Parcours du tableau JSON afin de prendre seulement les bus allant dans la direction du Nord
         for (int i = 0; i < vehicles.length(); i++) {
-            if (vehicles.getJSONObject(i).getString("des").equals("Howard")) {
-                results.add(vehicles.getJSONObject(i));
-            }
+            results.add(vehicles.getJSONObject(i));
         }
-
         return results;
     }
 
     /**
      * Méthode utilisée pour appeller le service Web
+     *
      * @param request l'URL correspondant à l'appel du service Web
      * @return un BufferedReaader en JSON que l'on pourra parcourir
      */
-    private BufferedReader makeHttpCall(String request) {
+    private BufferedReader makeHttpCall(String request) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpGet getRequest = new HttpGet(
                 request);
-        getRequest.addHeader("accept", "application/json");
-        try {
-            HttpResponse response = httpClient.execute(getRequest); // Envoi de la demande au service REST
-            if (response.getStatusLine().getStatusCode() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + response.getStatusLine().getStatusCode());
-            }
-            // Instanciation du buffer
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader((response.getEntity().getContent())));
-            return br;
-        } catch (IOException ex) {
-            Logger.getLogger(WebService.class.getName()).log(Level.SEVERE, null, ex);
+        HttpResponse response = httpClient.execute(getRequest); // Envoi de la demande au service REST
+        if (response.getStatusLine().getStatusCode() != 200) {
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + response.getStatusLine().getStatusCode());
         }
-        return null;
+        // Instanciation du buffer
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader((response.getEntity().getContent())));
+        return br;
+    }
+
+    /**
+     * Méthode utilisée afin de calculer la distance entre 2 points
+     *
+     * @param latitude la latitude du point
+     * @param longitude la longitude du point
+     * @return un String contenant la distance entre 2 points
+     */
+    public BigDecimal retrieveDistance(Double latitude, Double longitude) throws IOException {
+        StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&");
+        sb.append("origins=").append("41.984982"); // Latitude de l'arrêt du bus où est descendu l'utilisateur
+        sb.append(",").append("-87.668999"); // Longitude de l'arrêt du bus où est descendu l'utilisateur
+        sb.append("&destinations=").append(latitude.toString());
+        sb.append(",").append(longitude.toString());
+        sb.append("&key=AIzaSyD1bvIsZgdSMc-S_LfC83MPhbyhanrwA7Y");
+
+        BufferedReader bufferedReader = this.makeHttpCall(sb.toString());
+
+        JSONObject jsonObject = Utilitaire.makeJSONObject(bufferedReader);
+
+        String distance = jsonObject.getJSONArray("rows").getJSONObject(0).getJSONArray("elements").getJSONObject(0).getJSONObject("distance").get("value").toString();
+
+        return new BigDecimal(distance).divide(new BigDecimal("1000"));
+
     }
 }

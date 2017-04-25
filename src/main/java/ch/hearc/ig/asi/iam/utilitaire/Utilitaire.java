@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ch.hearc.ig.asi.iam.utilitaire;
 
 import java.io.BufferedReader;
@@ -15,9 +10,15 @@ import org.json.JSONObject;
 /**
  *
  * @author dimitri.mella
+ * Classe Utilitaire utilisée pour parcourir les objets JSON et calculer la distance entre les bus et l'arrêt
  */
 public class Utilitaire {
 
+    /**
+     * Méthode utilisée pour créer un objet JSON en fonction du buffer passé en paramètre
+     * @param bufferedReader le buffer contenant un JSON
+     * @return un objet JSON
+     */
     public static JSONObject makeJSONObject(BufferedReader bufferedReader) {
         String line;
         StringBuilder jsonReadObject = new StringBuilder();
@@ -34,6 +35,11 @@ public class Utilitaire {
         return null;
     }
     
+    /**
+     * Méthode utilisée pour calculer la distance entre un bus et l'arrêt du bus
+     * @param latitude la latitude actuelle du bus
+     * @return un BigDecimal indiquant la distance entre un bus et l'arrêt du bus
+     */
     public static BigDecimal getDistance(Double latitude){
         BigDecimal latitude1 = new BigDecimal(latitude.toString());
         BigDecimal latitude2 = new BigDecimal("41.984982");

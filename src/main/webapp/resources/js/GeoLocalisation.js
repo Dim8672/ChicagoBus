@@ -1,7 +1,7 @@
 // Déclaration de variable globales
 var map; // Map Google
-var task = setInterval(refreshMarker, 10000); // Demande de rafraichissement des markers toutes les 10 secondes
-var bus; // le bus contenant la valise
+// var task = setInterval(refreshMarker, 10000); // Demande de rafraichissement des markers toutes les 10 secondes
+var bus = {}; // le bus contenant la valise
 var busMarker; // le marker du bus contenant la valise
 
 /**
@@ -13,7 +13,7 @@ function initMap() {
     // Initialisation de la map
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 41.980262, lng: -87.668999},
-        mapTypeId: 'roadmap',
+        mapTypeId: 'hybrid',
         zoom: 12
     });
 
@@ -55,7 +55,9 @@ function getGoodBus() {
  */
 function refreshMarker() {
     clearMarker();
-    getGoodBus();
+    if($("#form").find(".tableData").children().first().children().first().children().last().children().first().find(".valise") !== undefined){
+        getGoodBus();
+    }
     console.log(bus);
     busMarker = new google.maps.Marker({
         position: {lat: bus.lat, lng: bus.lng},
