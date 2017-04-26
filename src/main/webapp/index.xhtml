@@ -2,14 +2,135 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-        <title>Facelet Title</title>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOSA9MONSqnsoCBifHd4seFTe_qzASLBQ&amp;" type="text/javascript"></script>
+        <title>Chicago Bus Tracker</title>
+        <h:outputScript library="js" name="GeoLocalisation.js"/>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOSA9MONSqnsoCBifHd4seFTe_qzASLBQ"></script>
+        <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>        
+        <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css" />        
+        <f:metadata>
+            <f:viewAction action="#{mapMarkers.init()}"/>
+        </f:metadata>
     </h:head>
-    <h:body>
-        <p:gmap center="41.381542, 2.122893" zoom="15" type="HYBRID" style="width:600px;height:400px"/>
-        <br />
+    <h:body style="background-image: url(resources/images/font.jpg); background-attachment: fixed;">
+        <div class="section">
+            <div class="container">                       
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="page-header">
+                            <h1 style="color : white">Chicago Bus Tracker</h1>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="well">
+                            <h:outputText value="Bienvenue dans l'application permettant de trouver le bus contenant la valise perdue !"/>
+                            <br/>
+                            <br/>
+                            <h:outputText value="La carte ci-dessous affiche 3 éléments importants :"/>
+                            <br/>
+                            <br/>
+                            <h:outputText value="Le marqueur bleu représente les bureaux de IAM."/>
+                            <br/>
+                            <h:outputText value="Le marqueur rouge représente l'arrêt du bus duquel vous êtes descendu."/>
+                            <br/>
+                            <h:outputText value="Le marqueur jaune représente le bus contenant la valise perdue."/>
+                            <br/>
+                            <br/>
+                            <h:outputText value="La liste des bus pouvant potentiellement contenir la valise est affichée en bas de la page"/>
+                            <br/>
+                            <br/>
+                            <h:outputText value="Si aucun marqueur jaune n'apparait sur la carte, veuillez vérifier l'état de l'application. Ce dernier est affiché ci-dessous."/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="well">
+                            <h:outputLabel id="applicationState">
+                                <h:outputText value="Etat de l'application : " />
+                                <h:outputText value="#{mapMarkers.applicationState == 'BUSNOTFINDED' ? 'Aucun bus est trouvé, veuillez patienter pour une prochaine recherche.' : mapMarkers.applicationState == 'BUSFINDED' ? 'Bus trouvé ! Il est indiqué en première position dans le tableau de la liste des bus.' : 'Service Indisponible, veuillez patienter un moment avant de relancer'}"/>
+                            </h:outputLabel>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="map" style="height:500px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h:form id="form">
+                            <p:dataTable value="#{mapMarkers.bus}" var="bus" id="coordTable" sortBy="#{bus.goodBus}" sortOrder="descending" styleClass="tableData" >
+                                <p:column headerText="Numéro du Bus">
+                                    <h:outputText value="#{bus.id}"/>
+                                </p:column>
+
+                                <p:column headerText="Direction">
+                                    <h:outputText value="#{bus.direction}"/>
+                                </p:column>
+
+                                <p:column headerText="Latitude">
+                                    <h:outputText value="#{bus.latitude}" styleClass="latitude"/>
+                                </p:column>
+
+                                <p:column headerText="Longitude">
+                                    <h:outputText value="#{bus.longitude}" styleClass="longitude"/>
+                                </p:column>
+
+                                <p:column headerText="Bus contenant la valise" styleClass="#{bus.goodBus ? 'valise' : null}">
+                                    <h:panelGroup styleClass="#{bus.goodBus ? 'ui-icon ui-icon-check' : 'ui-icon ui-icon-cancel'}" />
+                                    <h:outputText value="#{bus.goodBus ? bus.distance.toString().concat(' km de distance de l arrêt du bus') : ''} " />
+                                </p:column>
+                            </p:dataTable>
+                            <p:poll interval="60" listener="#{mapMarkers.makeArrayOfBus()}" update="form, :applicationState"/>
+                        </h:form>
+                        <p:dialog header="Valise à portée de main" widgetVar="dlg2" modal="true" height="100">
+                            <h:form>
+                                <h:outputText value="Le bus arrive dépêchez-vous !" />
+                                <br/>
+                                <p:commandButton id="save" value="Je vais chercher ma valise !" icon="ui-icon-disk" oncomplete="PF('dlg2').hide()"/>
+                            </h:form>
+                        </p:dialog> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="section" style="background-color: grey">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h1>IAM</h1>
+                        <p>ChicagoBus Tracker</p>
+                    </div>
+                    <div class="col-sm-6">
+                        
+                    </div>
+                </div>
+            </div>
+        </footer>
     </h:body>
 </html>
 
