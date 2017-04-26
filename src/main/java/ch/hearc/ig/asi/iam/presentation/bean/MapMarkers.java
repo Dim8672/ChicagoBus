@@ -3,7 +3,6 @@ package ch.hearc.ig.asi.iam.presentation.bean;
 import ch.hearc.ig.asi.iam.business.ApplicationState;
 import ch.hearc.ig.asi.iam.business.Bus;
 import ch.hearc.ig.asi.iam.service.WebService;
-import ch.hearc.ig.asi.iam.utilitaire.Utilitaire;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -24,7 +23,7 @@ import org.primefaces.context.RequestContext;
 @ViewScoped
 public class MapMarkers implements Serializable {
 
-    private List<Bus> bus; // Liste contenant les bus qui vont dans la direction du Nord
+    private List<Bus> bus; // Liste contenant les bus qui circulent sur la ligne 22
     private Bus goodBus; // Attribut utilisé pour stocker le bon bus que l'on tracke
     private String applicationState; // Attribut utilisé pour stocker l'état de l'application
 
@@ -38,8 +37,8 @@ public class MapMarkers implements Serializable {
     }
 
     /**
-     * Méthode appellée lors du chargement de la page afin d'afficher les deux
-     * coordoonées statiques, soit le bureau et l'arrêt du bus
+     * Méthode appellée lors du chargement de la page qui va mettre l'état de base
+     * de l'application et chercher la liste des bus
      */
     public void init() {
         this.bus = new ArrayList<>();
@@ -103,7 +102,7 @@ public class MapMarkers implements Serializable {
                     }
                 }
                 // Test afin de déterminer si le bus est proche de l'arrêt, si oui : une alerte est envoyée à l'utilisateur 
-                if (this.goodBus.getDistance().compareTo(new BigDecimal("0.482803")) == -1) {
+                if ((this.goodBus.getDistance().compareTo(new BigDecimal("0.482803"))) == -1 && (this.goodBus.getDirection().equals("Harrison"))) {
                     RequestContext context = RequestContext.getCurrentInstance();
                     context.execute("PF('dlg2').show();");
                 }

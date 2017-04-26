@@ -1,6 +1,5 @@
 // Déclaration de variable globales
 var map; // Map Google
-// var task = setInterval(refreshMarker, 10000); // Demande de rafraichissement des markers toutes les 10 secondes
 var bus = {}; // le bus contenant la valise
 var busMarker; // le marker du bus contenant la valise
 
